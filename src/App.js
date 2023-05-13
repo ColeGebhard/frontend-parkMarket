@@ -30,13 +30,7 @@ function App() {
     <BrowserRouter>
       <div className="App">
         <Header />
-        <nav>
-          <ul>
-            <li>
-              <Link to="/create">Create Listing</Link>
-            </li>
-          </ul>
-        </nav>
+
         <Routes>
           <Route path="/" element={<Posts posts={posts} />} />
           <Route path="/create" element={<ListingForm />} />

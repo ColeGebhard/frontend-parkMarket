@@ -1,68 +1,76 @@
 import "./Posts.css";
 import React, { useState } from "react";
 import { createPost } from "../api/helpers";
+import Compressor from 'compressorjs'
 
 const ListingForm = (props) => {
-    const [name, setName] = useState("");
-    const [description, setDescription] = useState("");
-    const [price, setPrice] = useState(0);
-    const [imageData, setImageData] = useState(null);
-    const [contactType, setContactType] = useState("");
-    const [contact, setContact] = useState("");
-    const [contactTypeBackup, setContactTypeBackup] = useState("");
-    const [content_backup, setContact_backup] = useState("");
-    const [report_count, setReport_count] = useState(0);
-    const [location, setLocation] = useState("");
-    const [categoryId, setCategoryId] = useState(0);
-    const [isActive, setIsActive] = useState(false)
-    const [userId, setUserId] = useState(0)
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState(0);
+  const [imageData, setImageData] = useState(null);
+  const [contactType, setContactType] = useState("");
+  const [contact, setContact] = useState("");
+  const [contactTypeBackup, setContactTypeBackup] = useState("");
+  const [content_backup, setContact_backup] = useState("");
+  const [report_count, setReport_count] = useState(0);
+  const [location, setLocation] = useState("");
+  const [categoryId, setCategoryId] = useState(0);
+  const [isActive, setIsActive] = useState(false)
+  const [userId, setUserId] = useState(0)
 
-    const handleImageUpload = (event) => {
-        const file = event.target.files[0];
-        
-        // Check if the selected file is an image
-        if (file && file.type.startsWith('image/')) {
+  const handleImageUpload = async (event) => {
+    const file = event.target.files[0];
+  
+    // Check if the selected file is an image
+    if (file && file.type.startsWith('image/')) {
+      new Compressor(file, {
+        quality: 0.6,
+        maxWidth: 800,
+        maxHeight: 800,
+        success(result) {
           const reader = new FileReader();
-      
+  
+          reader.readAsDataURL(result);
           reader.onload = (e) => {
             setImageData(e.target.result);
           };
-      
-          reader.readAsDataURL(file);
-        }
-      };
-      
-
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        const currentDate = new Date();
-        const postData = {
-            name,
-            description,
-            price,
-            image: imageData,
-            contactType,
-            contact,
-            contactTypeBackup,
-            contact_backup: content_backup,
-            report_count,
-            created_at: currentDate.toISOString(),
-            location,
-            categoryId,
-            isActive,
-            userId
-        };
-
-        try {
-            const response = await createPost(postData);
-            console.log(response)
-        } catch(error) {
-            console.log(error)
-        }
-
-
+        },
+        error(err) {
+          console.log(err.message);
+        },
+      });
+    }
+  };
+  
+  
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const currentDate = new Date();
+    console.log(imageData)
+    const postData = {
+      name,
+      description,
+      price,
+      image: imageData,
+      contactType,
+      contact,
+      contactTypeBackup,
+      contact_backup: content_backup,
+      report_count,
+      created_at: currentDate.toISOString(),
+      location,
+      categoryId,
+      isActive,
+      userId
     };
 
+    try {
+      const response = await createPost(postData);
+      console.log(response)
+    } catch(error) {
+      console.log(error)
+    }
+  };
     return (
         <form onSubmit={handleSubmit}>
             <div>
